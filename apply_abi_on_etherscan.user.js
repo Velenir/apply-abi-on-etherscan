@@ -5,10 +5,10 @@
 // @encoding     utf-8
 // @description  Adds an option to use abi from a different contract to etherscan's Read Contract/Write Contract panes
 // @author       Velenir
-// @homepage     https://github.com/Velenir/apply_abi_on_etherscan/
-// @supportURL   https://github.com/Velenir/apply_abi_on_etherscan/issues
-// @updateURL    https://raw.githubusercontent.com/Velenir/apply_abi_on_etherscan/master/apply_abi_on_etherscan.user.js
-// @downloadURL  https://raw.githubusercontent.com/Velenir/apply_abi_on_etherscan/master/apply_abi_on_etherscan.user.js
+// @homepage     https://github.com/Velenir/apply-abi-on-etherscan/
+// @supportURL   https://github.com/Velenir/apply-abi-on-etherscan/issues
+// @updateURL    https://raw.githubusercontent.com/Velenir/apply-abi-on-etherscan/master/apply_abi_on_etherscan.user.js
+// @downloadURL  https://raw.githubusercontent.com/Velenir/apply-abi-on-etherscan/master/apply_abi_on_etherscan.user.js
 // @license      MIT
 // @match        http://*.etherscan.io/address/*
 // @match        https://*.etherscan.io/address/*
