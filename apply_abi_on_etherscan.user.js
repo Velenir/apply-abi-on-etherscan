@@ -336,7 +336,7 @@
     input.id = inputId;
     input.placeholder = "address";
     input.required = true;
-    input.pattern = "^0x\\p{ASCII_Hex_Digit}{40}$";
+    input.pattern = "^0x[0-9A-Fa-f]{40}$";
     input.title = "Contract address 0x1234...";
     input.className = "form-control";
 
