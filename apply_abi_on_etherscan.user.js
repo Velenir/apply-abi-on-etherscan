@@ -214,8 +214,11 @@
 
           // watch for when Metamask is connected
           if (iframe.id === "writecontractiframe") {
-            const header = iframe.contentDocument.querySelector(".row .header");
+            // observer may have not been disconnected frm previous iframe's #connector
+            // happens when Metamask was never connected
+            observer.disconnect();
 
+            const header = iframe.contentDocument.querySelector(".row .header");
 
             if (!header)
               throw new Error(
