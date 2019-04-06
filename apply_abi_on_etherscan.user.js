@@ -336,7 +336,7 @@
     input.id = inputId;
     input.placeholder = "address";
     input.required = true;
-    input.pattern = "^0x[0-9A-Fa-f]{40}$";
+    input.pattern = "^\s*0x[0-9A-Fa-f]{40}\s*$";
     input.title = "Contract address 0x1234...";
     input.className = "form-control";
 
@@ -362,7 +362,7 @@
     divOuter.append(divLabel, input, divButtons);
 
     form.setAddress = address => (input.value = address);
-    form.getAddress = () => input.value;
+    form.getAddress = () => input.value.trim();
     form.clear = () => (input.value = "");
 
     return form;
