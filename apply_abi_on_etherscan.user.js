@@ -106,7 +106,6 @@
     const onReset = e => {
       e.preventDefault();
       const form = e.currentTarget;
-      const address = form.getAddress();
       abiAddress = null;
 
       clearForms(forms);
@@ -234,9 +233,11 @@
     }
 
     function createMutationObserverForConnector() {
-      const observer = new MutationObserver((mutations) => {
+      const observer = new MutationObserver(mutations => {
         // can't observe #connector directly, it's dynamically added after page load
-        const connectorMutation = mutations.find(m => m.target.id === 'connector')
+        const connectorMutation = mutations.find(
+          m => m.target.id === "connector"
+        );
         // only react to change to #connector.title
         if (!connectorMutation) return;
 
@@ -271,9 +272,7 @@
             // replace contract instance with one connected to originalAddress
             // otherwise it is connected to ?a=<address> from iframe.src
             // which is abiAddress we provided
-            frameWindow.myContractInstance = myContract.at(
-              originalAddress
-            );
+            frameWindow.myContractInstance = myContract.at(originalAddress);
           }
 
           // currently myContractInstance is no longer recreated
@@ -282,7 +281,7 @@
         }
       });
 
-      return observer
+      return observer;
     }
   }
 
