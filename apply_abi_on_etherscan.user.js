@@ -72,6 +72,8 @@
     blockOriginalABIloading();
 
     const { address: originalAddress, network } = getInfoFromURL();
+    const originalABIAddress =
+      window.litContractABIAddressCode || originalAddress;
 
     let abiAddress = null;
 
@@ -110,7 +112,12 @@
 
       clearForms(forms);
 
-      applyAddressToIframes(originalAddress, iframes);
+      applyAddressToIframes(
+        originalAddress,
+        iframes,
+        false,
+        originalABIAddress
+      );
 
       clearStorage();
     };
@@ -121,7 +128,12 @@
     });
 
     window.addEventListener("load", () =>
-      applyAddressToIframes(abiAddress || originalAddress, iframes)
+      applyAddressToIframes(
+        abiAddress || originalAddress,
+        iframes,
+        false,
+        abiAddress || originalABIAddress
+      )
     );
     restoreFromStorage(address => {
       abiAddress = address;
@@ -142,7 +154,12 @@
         if (!isElementVisible(readform))
           abiAddress ? readform.setAddress(abiAddress) : readform.clear();
 
-        applyAddressToIframes(abiAddress || originalAddress, [readframe], true);
+        applyAddressToIframes(
+          abiAddress || originalAddress,
+          [readframe],
+          true,
+          abiAddress || originalABIAddress
+        );
       });
       wcTab.addEventListener("click", () => {
         if (!isElementVisible(writeform))
@@ -151,12 +168,18 @@
         applyAddressToIframes(
           abiAddress || originalAddress,
           [writeframe],
-          true
+          true,
+          abiAddress || originalABIAddress
         );
       });
     }
 
-    function applyAddressToIframes(address, iframes, force) {
+    function applyAddressToIframes(
+      address,
+      iframes,
+      force,
+      abiAddress = address
+    ) {
       iframes.forEach(iframe => {
         // don't reload the frmae unless it's visible or about to come into view
         // otherwise it doesn't get properly resized on load event
@@ -184,13 +207,15 @@
         ) {
           iframe.src = (id === "readcontractiframe"
             ? createReadIframeSrc
-            : createWriteIframeSrc)(address);
+            : createWriteIframeSrc)(address, abiAddress);
         }
       });
     }
 
-    function createReadIframeSrc(address) {
-      return `/readContract?m=${window.mode}&a=${originalAddress}&v=${address}`;
+    function createReadIframeSrc(address, abiAddress = address) {
+      return `/readContract?m=${
+        window.mode
+      }&a=${originalAddress}&v=${abiAddress}`;
     }
     function createWriteIframeSrc(address) {
       return `/writecontract/index.html?m=${
