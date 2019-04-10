@@ -66,8 +66,9 @@
   function addProxyForms() {
     const readContractPane = document.getElementById("readContract");
     const writeContractPane = document.getElementById("writeContract");
+    const eventsPane = document.getElementById("events");
 
-    if (!readContractPane || !writeContractPane) return;
+    if (!readContractPane || !writeContractPane || !eventsPane) return;
 
     blockOriginalABIloading();
 
@@ -77,11 +78,11 @@
 
     let abiAddress = null;
 
-    const panes = [readContractPane, writeContractPane];
+    const panes = [readContractPane, writeContractPane, eventsPane];
 
     const iframes = panes.map(pane => pane.querySelector("iframe"));
 
-    const [readframe, writeframe] = iframes;
+    const [readframe, writeframe, eventsframe] = iframes;
 
     const inputId = "apply-abi-address-";
     const forms = panes.map((pane, i) => {
@@ -92,7 +93,7 @@
       return form;
     });
 
-    const [readform, writeform] = forms;
+    const [readform, writeform, eventsform] = forms;
 
     const onSubmit = e => {
       e.preventDefault();
@@ -148,30 +149,26 @@
     function changeLinks() {
       const rcTab = document.querySelector('a[href="#readContract"]');
       const wcTab = document.querySelector('a[href="#writeContract"]');
+      const eTab = document.querySelector('a[href="#events"]');
 
-      rcTab.addEventListener("click", () => {
+      const addClickListener = (tab, form, frame) => {
+        tab.addEventListener("click", () => {
         // only change the form that will be displayed
-        if (!isElementVisible(readform))
-          abiAddress ? readform.setAddress(abiAddress) : readform.clear();
+          if (!isElementVisible(form))
+            abiAddress ? form.setAddress(abiAddress) : form.clear();
 
         applyAddressToIframes(
           abiAddress || originalAddress,
-          [readframe],
+            [frame],
           true,
           abiAddress || originalABIAddress
         );
       });
-      wcTab.addEventListener("click", () => {
-        if (!isElementVisible(writeform))
-          abiAddress ? writeform.setAddress(abiAddress) : writeform.clear();
+      };
 
-        applyAddressToIframes(
-          abiAddress || originalAddress,
-          [writeframe],
-          true,
-          abiAddress || originalABIAddress
-        );
-      });
+      addClickListener(rcTab, readform, readframe);
+      addClickListener(wcTab, writeform, writeframe);
+      addClickListener(eTab, eventsform, eventsframe);
     }
 
     function applyAddressToIframes(
@@ -190,7 +187,7 @@
         const { id } = iframe;
 
         let prop;
-        if (id === "readcontractiframe") {
+        if (id === "readcontractiframe" || id === "eventsIframe") {
           prop = "v";
         } else if (id === "writecontractiframe") {
           prop = "a";
@@ -205,9 +202,16 @@
           prevAddress === null ||
           prevAddress.toLowerCase() !== address.toLowerCase()
         ) {
-          iframe.src = (id === "readcontractiframe"
-            ? createReadIframeSrc
-            : createWriteIframeSrc)(address, abiAddress);
+          let newSrc;
+          if (id === "readcontractiframe") {
+            newSrc = createReadIframeSrc(address, abiAddress);
+          } else if (id === "writecontractiframe") {
+            newSrc = createWriteIframeSrc(address);
+          } else if (id === "eventsIframe") {
+            newSrc = createEventsIframeSrc(address, abiAddress);
+        }
+
+          iframe.src = newSrc;
         }
       });
     }
@@ -221,6 +225,11 @@
       return `/writecontract/index.html?m=${
         window.mode
       }&v=0.0.6&a=${address}&n=${network}`;
+    }
+    function createEventsIframeSrc(address, abiAddress = address) {
+      return `/address-events?m=${
+        window.mode
+      }&a=${originalAddress}&v=${abiAddress}`;
     }
 
     const observer = createMutationObserverForConnector();
