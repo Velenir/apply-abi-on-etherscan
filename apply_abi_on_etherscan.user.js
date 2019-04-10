@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Apply ABI on Etherscan
 // @namespace    https://openuserjs.org/users/Velenir
-// @version      1.0.3
+// @version      1.1.0
 // @encoding     utf-8
 // @description  Adds an option to use abi from a different contract to etherscan's Read Contract/Write Contract panes
 // @author       Velenir
