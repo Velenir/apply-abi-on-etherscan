@@ -144,8 +144,6 @@
 
     changeLinks(iframes, forms);
 
-    oniFramesLoad(iframes);
-
     function changeLinks() {
       const rcTab = document.querySelector('a[href="#readContract"]');
       const wcTab = document.querySelector('a[href="#writeContract"]');
@@ -153,17 +151,17 @@
 
       const addClickListener = (tab, form, frame) => {
         tab.addEventListener("click", () => {
-        // only change the form that will be displayed
+          // only change the form that will be displayed
           if (!isElementVisible(form))
             abiAddress ? form.setAddress(abiAddress) : form.clear();
 
-        applyAddressToIframes(
-          abiAddress || originalAddress,
+          applyAddressToIframes(
+            abiAddress || originalAddress,
             [frame],
-          true,
-          abiAddress || originalABIAddress
-        );
-      });
+            true,
+            abiAddress || originalABIAddress
+          );
+        });
       };
 
       addClickListener(rcTab, readform, readframe);
@@ -209,7 +207,7 @@
             newSrc = createWriteIframeSrc(address);
           } else if (id === "eventsIframe") {
             newSrc = createEventsIframeSrc(address, abiAddress);
-        }
+          }
 
           iframe.src = newSrc;
         }
@@ -233,41 +231,38 @@
     }
 
     const observer = createMutationObserverForConnector();
+    // watch for when Metamask is connected
+    writeframe.addEventListener("load", () => {
+      // observer may have not been disconnected frm previous iframe's #connector
+      // happens when Metamask was never connected
+      observer.disconnect();
 
-    function oniFramesLoad(iframes) {
-      iframes.forEach(iframe => {
-        iframe.addEventListener("load", () => {
-          if (
-            iframe.contentDocument.body.innerText.includes(
-              "Sorry, we were unable"
-            )
-          )
-            return;
+      const header = writeframe.contentDocument.querySelector(".row .header");
 
-          if (abiAddress) saveToStorage(abiAddress);
+      if (!header)
+        throw new Error(
+          "iframe #writecontractiframe doesn't have '.row .header' element"
+        );
 
-          // watch for when Metamask is connected
-          if (iframe.id === "writecontractiframe") {
-            // observer may have not been disconnected frm previous iframe's #connector
-            // happens when Metamask was never connected
-            observer.disconnect();
-
-            const header = iframe.contentDocument.querySelector(".row .header");
-
-            if (!header)
-              throw new Error(
-                "iframe #writecontractiframe doesn't have '.row .header' element"
-              );
-
-            observer.observe(header, {
-              attributes: true,
-              attributeFilter: ["title"],
-              subtree: true
-            });
-          }
-        });
+      observer.observe(header, {
+        attributes: true,
+        attributeFilter: ["title"],
+        subtree: true
       });
-    }
+    });
+
+    window.addEventListener("beforeunload", () => {
+      if (!abiAddress) return
+      if (
+        [readframe, writeframe].some(frame => {
+          return frame.contentDocument.body.innerText.includes(
+            "Sorry, we were unable"
+          );
+        })
+      )
+        return;
+      saveToStorage(abiAddress);
+    });
 
     function createMutationObserverForConnector() {
       const observer = new MutationObserver(mutations => {
