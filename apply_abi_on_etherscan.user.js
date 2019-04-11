@@ -19,7 +19,7 @@
 // @grant        GM_deleteValue
 // ==/UserScript==
 
-(function() {
+(function () {
   "use strict";
 
   const window = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
@@ -217,17 +217,17 @@
     function createReadIframeSrc(address, abiAddress = address) {
       return `/readContract?m=${
         window.mode
-      }&a=${originalAddress}&v=${abiAddress}`;
+        }&a=${originalAddress}&v=${abiAddress}`;
     }
     function createWriteIframeSrc(address) {
       return `/writecontract/index.html?m=${
         window.mode
-      }&v=0.0.6&a=${address}&n=${network}`;
+        }&v=0.0.6&a=${address}&n=${network}`;
     }
     function createEventsIframeSrc(address, abiAddress = address) {
       return `/address-events?m=${
         window.mode
-      }&a=${originalAddress}&v=${abiAddress}`;
+        }&a=${originalAddress}&v=${abiAddress}`;
     }
 
     const observer = createMutationObserverForConnector();
@@ -253,14 +253,16 @@
 
     window.addEventListener("beforeunload", () => {
       if (!abiAddress) return
-      if (
-        [readframe, writeframe].some(frame => {
-          return frame.contentDocument.body.innerText.includes(
-            "Sorry, we were unable"
-          );
-        })
-      )
-        return;
+
+      const readframeFailed = /Sorry, we were unable to retrieve a valid Contract ABI for this contract\.[\n\s]Unable to read contract information/.test(
+        readframe.contentDocument.body.innerText
+      );
+      const writeframeFailed = /Sorry, we were unable to locate a matching Contract ABI or SourceCode for this contract\.(\n\n)?If you are the contract owner, please Verify Your Contract Source Code here/.test(
+        readframe.contentDocument.body.innerText
+      );
+
+      if (readframeFailed || writeframeFailed) return;
+
       saveToStorage(abiAddress);
     });
 
@@ -288,14 +290,14 @@
           if (!myContract) {
             throw new Error(
               `No web3 Contract object at window.myContract in ${
-                writeframe.id
+              writeframe.id
               } iframe`
             );
           }
           if (!myContractInstance) {
             throw new Error(
               `No web3 Contract instance at window.myContractInstance in ${
-                writeframe.id
+              writeframe.id
               } iframe`
             );
           }
