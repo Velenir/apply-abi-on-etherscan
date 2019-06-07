@@ -237,7 +237,7 @@
       // happens when Metamask was never connected
       observer.disconnect();
 
-      const header = writeframe.contentDocument.querySelector(".row .header");
+      const header = writeframe.contentDocument.getElementById("header");
 
       if (!header)
         throw new Error(
