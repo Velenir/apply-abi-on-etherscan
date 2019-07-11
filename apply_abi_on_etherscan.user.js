@@ -88,7 +88,7 @@
     const forms = panes.map((pane, i) => {
       const form = createForm(inputId, i);
 
-      pane.firstElementChild.prepend(form);
+      pane.prepend(form);
 
       return form;
     });
